@@ -1,30 +1,22 @@
 <script lang="ts">
-	import { getHLS } from '$lib/dl-music';
 	import { onMount } from 'svelte';
 
-	let video: HTMLVideoElement;
-
 	onMount(async () => {
-		const { default: shaka } = await import('shaka-player');
-
-		if (!shaka.Player.isBrowserSupported()) {
-			alert('Unsupported browser.');
-			throw new Error('unsupported browser.');
-		}
-
-		const HLS = await getHLS('6_aqeCDk1Yk');
-
-		const player = new shaka.Player(video);
-
-		await player.load(HLS);
+		// get user's tracks
+		await fetch('https://api.spotify.com/v1/me/tracks?offset=0&limit=20', {
+			// authorization header
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem('token')}`
+			}
+		})
+			.then((r) => r.json())
+			.then(console.log);
 	});
 </script>
 
-<svelte:head>
-	<script src="./mux.min.js" async></script>
-</svelte:head>
-
-<!-- svelte-ignore a11y-media-has-caption -->
-<video bind:this={video} controls autoplay />
-
-<h1>Spiffy</h1>
+<button
+	on:click={() => {
+		localStorage.removeItem('token');
+		window.location.reload();
+	}}>Logout</button
+>
