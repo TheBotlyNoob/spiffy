@@ -1,22 +1,19 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
-	onMount(async () => {
-		// get user's tracks
-		await fetch('https://api.spotify.com/v1/me/tracks?offset=0&limit=20', {
-			// authorization header
-			headers: {
-				Authorization: `Bearer ${localStorage.getItem('token')}`
-			}
-		})
-			.then((r) => r.json())
-			.then(console.log);
-	});
+	import Login from '$lib/Login.svelte';
+	import { LOGGED_IN } from '$lib/spotify';
+	import Player from '$lib/Player.svelte';
 </script>
 
-<button
-	on:click={() => {
-		localStorage.removeItem('token');
-		window.location.reload();
-	}}>Logout</button
->
+{#if !LOGGED_IN}
+	<Login />
+{:else}
+	<button
+		class="btn btn-active"
+		on:click={() => {
+			localStorage.removeItem('token');
+			window.location.reload();
+		}}>Logout</button
+	>
+
+	<Player />
+{/if}

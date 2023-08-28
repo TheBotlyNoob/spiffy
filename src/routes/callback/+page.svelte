@@ -1,25 +1,34 @@
 <script lang="ts">
+	import { REDIRECT_URI } from '$lib/spotify';
+	import type { AccessToken } from '@spotify/web-api-ts-sdk';
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
 		const code = [...new URLSearchParams(window.location.search)].find(([k]) => k === 'code')![1];
 
-		const form = new FormData();
-		form.append('grant_type', 'authorization_code');
-		form.append('code', code);
-		form.append('redirect_uri', 'http://localhost:5173/callback');
+		const clientID = localStorage.getItem('clientID');
+		const clientSecret = localStorage.getItem('clientSecret');
+		if (!clientID || !clientSecret) {
+			alert(
+				'Please login first. If you are trying to login, please delete your cookies and try again.'
+			);
+			window.location.href = '/';
+			return;
+		}
 
-		const { access_token, expires_in } = await fetch('https://accounts.spotify.com/api/token', {
+		const accessToken: AccessToken = await fetch('https://accounts.spotify.com/api/token', {
 			headers: {
-				Authorization: `Basic ${btoa(
-					'2c3464f9bfb04436b2fefb1f6746e4f9:8765fcf5da754b5bbe32453428e1ffe0'
-				)}`
+				Authorization: `Basic ${btoa(clientID + ':' + clientSecret)}`
 			},
-			body: form,
+			body: new URLSearchParams({
+				grant_type: 'authorization_code',
+				code,
+				redirect_uri: REDIRECT_URI
+			}),
 			method: 'POST'
 		}).then((r) => r.json());
 
-		localStorage.setItem('token', access_token);
+		localStorage.setItem('token', JSON.stringify(accessToken));
 
 		window.location.href = '/';
 	});
