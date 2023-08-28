@@ -1,24 +1,23 @@
 <script lang="ts">
-	import { HAS_SPOTIFY_APP, REDIRECT_URI } from '$lib/spotify';
+	import { CLIENT_ID, REDIRECT_URI } from '$lib/spotify';
 
-	let clientID: string;
-	let clientSecret: string;
+	let clientID: string | null;
+	let clientSecret: string | null;
 
 	const onSubmit = (e: SubmitEvent) => {
 		e.preventDefault();
 
-		if (!HAS_SPOTIFY_APP) {
-			localStorage.setItem('clientID', clientID);
-			localStorage.setItem('clientSecret', clientSecret);
+		if (!CLIENT_ID) {
+			localStorage.setItem('clientID', clientID!);
+			localStorage.setItem('clientSecret', clientSecret!);
 		} else {
 			clientID = localStorage.getItem('clientID')!;
-			clientSecret = localStorage.getItem('clientSecret')!;
 		}
 
 		window.location.href =
 			'https://accounts.spotify.com/authorize?' +
 			new URLSearchParams({
-				client_id: clientID,
+				client_id: clientID!,
 				response_type: 'code',
 				redirect_uri: REDIRECT_URI,
 				scope: 'user-library-read'
@@ -27,7 +26,7 @@
 </script>
 
 <form on:submit={onSubmit} class="form-control">
-	{#if !HAS_SPOTIFY_APP}
+	{#if !CLIENT_ID}
 		<input
 			class="input input-bordered mt-4"
 			type="text"

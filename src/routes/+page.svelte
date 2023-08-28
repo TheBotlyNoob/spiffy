@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Login from '$lib/Login.svelte';
-	import { LOGGED_IN } from '$lib/spotify';
+	import { TOKEN } from '$lib/spotify';
 	import Player from '$lib/Player.svelte';
 </script>
 
-{#if !LOGGED_IN}
+{#if !TOKEN}
 	<Login />
 {:else}
 	<button

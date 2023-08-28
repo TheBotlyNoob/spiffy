@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { REDIRECT_URI } from '$lib/spotify';
+	import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$lib/spotify';
 	import type { AccessToken } from '@spotify/web-api-ts-sdk';
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
 		const code = [...new URLSearchParams(window.location.search)].find(([k]) => k === 'code')![1];
 
-		const clientID = localStorage.getItem('clientID');
-		const clientSecret = localStorage.getItem('clientSecret');
-		if (!clientID || !clientSecret) {
+		if (!CLIENT_ID || !CLIENT_SECRET) {
 			alert(
 				'Please login first. If you are trying to login, please delete your cookies and try again.'
 			);
@@ -18,7 +16,7 @@
 
 		const accessToken: AccessToken = await fetch('https://accounts.spotify.com/api/token', {
 			headers: {
-				Authorization: `Basic ${btoa(clientID + ':' + clientSecret)}`
+				Authorization: `Basic ${btoa(CLIENT_ID + ':' + CLIENT_SECRET)}`
 			},
 			body: new URLSearchParams({
 				grant_type: 'authorization_code',
