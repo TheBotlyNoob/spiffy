@@ -3,8 +3,7 @@
 	import { PUBLIC_INVIDIOUS_INSTANCE } from '$env/static/public';
 	import type { Track } from '@spotify/web-api-ts-sdk';
 	import { Howl, Howler } from 'howler';
-	import { writable } from 'svelte/store';
-	import { downloadTrack } from '$lib/download';
+	import { db, downloadTrack } from '$lib/download';
 
 	import Play from '~icons/zondicons/play-outline';
 	import Pause from '~icons/zondicons/pause-outline';
@@ -72,19 +71,26 @@
 				return;
 			}
 
-			if (!trackData[track.id].youtubeId) {
-				trackData[track.id].youtubeId = await getYoutubeId(track);
-			}
-
-			let sound = new Howl({
-				src: [
-					PUBLIC_INVIDIOUS_INSTANCE +
+			let url = await db.tracks.get(track.id).then(async (savedTrack) => {
+				if (savedTrack) {
+					return savedTrack.data;
+				} else {
+					if (!trackData[track.id].youtubeId) {
+						trackData[track.id].youtubeId = await getYoutubeId(track);
+					}
+					return (
+						PUBLIC_INVIDIOUS_INSTANCE +
 						'/latest_version?' +
 						new URLSearchParams({
 							id: trackData[track.id].youtubeId!,
 							itag: '139'
 						})
-				],
+					);
+				}
+			});
+
+			let sound = new Howl({
+				src: [url],
 				html5: true
 			});
 			Howler.stop();

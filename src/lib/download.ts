@@ -23,6 +23,8 @@ class DownloadedTrackDexie extends Dexie {
 	}
 }
 
+export const db = new DownloadedTrackDexie();
+
 export const downloadTrack = async (track: Track, index: number, youtubeId: string) => {
 	const url =
 		// 'https://cros.deno.dev/' + // TODO: cors
@@ -33,14 +35,27 @@ export const downloadTrack = async (track: Track, index: number, youtubeId: stri
 			itag: '139'
 		});
 
-	const blob = await fetch(url).then((r) => r.blob());
+	const blob = await fetch(url).then((r) => {
+		// if it's a partial content response, we need to get the full content
+		if (r.status === 206) {
+			const range = r.headers.get('content-range');
+			if (range) {
+				const [, end] = range.split('/');
+				return fetch(url, {
+					headers: {
+						range: `bytes=0-${end}`
+					}
+				}).then((r) => r.blob());
+			}
+		}
+		return r.blob();
+	});
 	const base64: string = await new Promise((res) => {
 		const reader = new FileReader();
 		reader.onloadend = () => res(reader.result as string);
 		reader.readAsDataURL(blob);
 	});
 
-	const db = new DownloadedTrackDexie();
 	db.version(1).stores({
 		tracks: 'id, name, artists, album, url'
 	});
