@@ -6,7 +6,7 @@
 
 	onMount(() => {
 		if (TOKEN && CLIENT_ID) {
-			$spotifySDK = SpotifyApi.withAccessToken(CLIENT_ID, JSON.parse(TOKEN));
+			spotifySDK.set(SpotifyApi.withAccessToken(CLIENT_ID, JSON.parse(TOKEN)));
 		}
 	});
 </script>
