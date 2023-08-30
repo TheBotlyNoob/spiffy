@@ -128,7 +128,7 @@
 	{#if tracks}
 		<!-- <button on:click={downloadAll}>download all</button> -->
 		<ol class="join join-vertical">
-			{#each tracks.items.entries() as [idx, { track }]}
+			{#each tracks.items as { track }, idx (trackData[track.id])}
 				<li bind:this={trackData[track.id].element}>
 					<span class="btn btn-active join-item">
 						{track.name} - {track.artists[0].name}

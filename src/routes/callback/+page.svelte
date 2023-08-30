@@ -11,7 +11,7 @@
 			alert(
 				'Please login first. If you are trying to login, please delete your cookies and try again.'
 			);
-			window.location.href = '/';
+			window.location.href = base || '/';
 			return;
 		}
 
@@ -29,6 +29,6 @@
 
 		localStorage.setItem('token', JSON.stringify(accessToken));
 
-		window.location.href = base;
+		window.location.href = base || '/';
 	});
 </script>

@@ -25,14 +25,21 @@ class DownloadedTrackDexie extends Dexie {
 
 export const db = new DownloadedTrackDexie();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const LOW_QUALITY_ITAG = '599'; // doesn't always appear
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const MEDIUM_QUALITY_ITAG = '139';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const HIGH_QUALITY_ITAG = '140';
+
 export const downloadTrack = async (track: Track, index: number, youtubeId: string) => {
 	const url =
-		// 'https://cros.deno.dev/' + // TODO: cors
+		'https://cors-proxy.fringe.zone/' + // TODO: cors
 		PUBLIC_INVIDIOUS_INSTANCE +
 		'/latest_version?' +
 		new URLSearchParams({
 			id: youtubeId,
-			itag: '139'
+			itag: MEDIUM_QUALITY_ITAG
 		});
 
 	const blob = await fetch(url).then((r) => {
