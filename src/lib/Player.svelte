@@ -8,6 +8,7 @@
 	import Play from '~icons/zondicons/play-outline';
 	import Pause from '~icons/zondicons/pause-outline';
 	import Download from '~icons/solar/download-linear';
+	import Downloaded from '~icons/iconamoon/check-duotone';
 	import Loading from '~icons/line-md/loading-loop';
 
 	const getYoutubeId = async (track: Track) => {
@@ -40,24 +41,17 @@
 				index: number;
 
 				sound: Howl | null;
+				playing: boolean;
 				downloading: boolean;
+				downloaded: boolean;
 			};
 		},
 		{
 			// the getter automatically creates a new object if the key doesn't exist
 			get: (target, key: string) => {
 				if (!(key in target)) {
-					target[key] = {
-						// @ts-expect-error
-						track: null,
-						youtubeId: null,
-						// @ts-expect-error
-						element: null,
-						// @ts-expect-error
-						index: null,
-						playing: false,
-						downloading: false
-					};
+					// @ts-expect-error
+					target[key] = {};
 				}
 				return target[key];
 			}
@@ -95,6 +89,12 @@
 			});
 			Howler.stop();
 			trackData[track.id].sound = sound;
+			sound.on('play', () => {
+				trackData[track.id].playing = true;
+			});
+			sound.on('pause', () => {
+				trackData[track.id].playing = false;
+			});
 			sound.play();
 		};
 	};
@@ -133,7 +133,7 @@
 					<span class="btn btn-active join-item">
 						{track.name} - {track.artists[0].name}
 						<button on:click={play(track)}>
-							{#if trackData[track.id].sound?.playing()}
+							{#if trackData[track.id].playing}
 								<Pause />
 							{:else}
 								<Play />
@@ -142,6 +142,8 @@
 						<button on:click={download(track, idx)}>
 							{#if trackData[track.id].downloading}
 								<Loading />
+								<!-- {:else if trackData[track.id].playing}
+								<Downloaded /> -->
 							{:else}
 								<Download />
 							{/if}
