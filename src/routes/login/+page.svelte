@@ -25,18 +25,26 @@
 	};
 </script>
 
+<h1>
+	Make a Spotify application at <a
+		class="link link-hover text-blue-500"
+		href="https://developer.spotify.com/dashboard">https://developer.spotify.com/dashboard</a
+	>
+</h1>
 <form on:submit={onSubmit} class="form-control">
 	{#if !CLIENT_ID}
 		<input
 			class="input input-bordered mt-4"
 			type="text"
 			placeholder="Spotify Client ID"
+			required
 			bind:value={clientID}
 		/>
 		<input
 			class="input input-bordered mt-4"
 			type="text"
 			placeholder="Spotify Client Secret"
+			required
 			bind:value={clientSecret}
 		/>
 		<div class="alert alert-warning mt-4 py-3">
@@ -59,6 +67,18 @@
 				</code>
 			</div>
 		</div>
+	{:else}
+		<button
+			class="btn btn-active mt-4"
+			value="Clear Cookies"
+			on:click={(e) => {
+				e.preventDefault();
+				localStorage.clear();
+				window.location.reload();
+			}}
+		>
+			Clear Cookies
+		</button>
 	{/if}
 	<input class="btn btn-active mt-4" type="submit" value="Login" />
 </form>

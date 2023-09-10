@@ -1,15 +1,18 @@
 <script lang="ts">
-	import { spotifySDK } from '$lib/spotify';
 	import { PUBLIC_INVIDIOUS_INSTANCE } from '$env/static/public';
 	import type { Track } from '@spotify/web-api-ts-sdk';
 	import { Howl, Howler } from 'howler';
 	import { db, downloadTrack } from '$lib/download';
+	import type { LayoutData } from './$types';
 
 	import Play from '~icons/zondicons/play-outline';
 	import Pause from '~icons/zondicons/pause-outline';
 	import Download from '~icons/solar/download-linear';
-	import Downloaded from '~icons/iconamoon/check-duotone';
 	import Loading from '~icons/line-md/loading-loop';
+
+	export let data: LayoutData;
+
+	console.log(data);
 
 	const getYoutubeId = async (track: Track) => {
 		interface Results {
@@ -30,7 +33,7 @@
 		return results[0].videoId;
 	};
 
-	$: tracks = $spotifySDK?.currentUser.tracks.savedTracks();
+	let tracks = data.sdk.currentUser.tracks.savedTracks();
 
 	let trackData = new Proxy(
 		{} as {
@@ -58,7 +61,9 @@
 		}
 	);
 
-	const play = (track: Track): ((e: MouseEvent) => Promise<void>) => {
+	tracks?.then();
+
+	const play = (track: Track): (() => Promise<void>) => {
 		return async () => {
 			if (trackData[track.id].sound?.playing()) {
 				trackData[track.id].sound?.pause();
@@ -95,10 +100,18 @@
 			sound.on('pause', () => {
 				trackData[track.id].playing = false;
 			});
+			sound.on('end', () => {
+				let nextTrack = Object.values(trackData).find(
+					(v) => v.index === trackData[track.id].index + 1
+				);
+				if (nextTrack) {
+					play(nextTrack.track)();
+				}
+			});
 			sound.play();
 		};
 	};
-	const download = (track: Track, idx: number): ((e: MouseEvent) => Promise<void>) => {
+	const download = (track: Track, idx: number): (() => Promise<void>) => {
 		return async () => {
 			if (trackData[track.id].downloading) return;
 
@@ -114,19 +127,36 @@
 		};
 	};
 
-	// const downloadAll = () => {
-	// 	let target = e.target as HTMLButtonElement;
-	// 	let items = target.parentElement?.querySelectorAll('li');
-	// 	if (items) {
-	// 	}
-	// };
+	const downloadAll = async () => {
+		// download 3 tracks at a time asynchronously, and wait for all of them to finish
+		// then download the next 3 tracks
+		let tracks = Object.values(trackData);
+		for (let i = 0; i < tracks.length; i += 3) {
+			let promises = [];
+			for (let j = 0; j < 3; j++) {
+				if (i + j >= tracks.length) break;
+				console.log(tracks[i + j]);
+				promises.push(download(tracks[i + j].track, tracks[i + j].index)());
+			}
+			await Promise.all(promises);
+		}
+	};
 </script>
 
+<button
+	class="btn btn-active"
+	on:click={() => {
+		localStorage.removeItem('token');
+		window.location.reload();
+	}}
+>
+	Logout
+</button>
 {#await tracks}
 	<p>loading tracks...</p>
 {:then tracks}
 	{#if tracks}
-		<!-- <button on:click={downloadAll}>download all</button> -->
+		<button on:click={downloadAll}>download all</button>
 		<ol class="join join-vertical">
 			{#each tracks.items as { track }, idx (trackData[track.id])}
 				<li bind:this={trackData[track.id].element}>
