@@ -34,7 +34,7 @@ const HIGH_QUALITY_ITAG = '140';
 
 export const downloadTrack = async (track: Track, index: number, youtubeId: string) => {
 	const url =
-		'https://cors-proxy.fringe.zone/' + // TODO: cors
+		// 'https://cors-proxy.fringe.zone/' + // TODO: cors
 		PUBLIC_INVIDIOUS_INSTANCE +
 		'/latest_version?' +
 		new URLSearchParams({

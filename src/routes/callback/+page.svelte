@@ -2,9 +2,8 @@
 	import { base } from '$app/paths';
 	import { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from '$lib/spotify';
 	import type { AccessToken } from '@spotify/web-api-ts-sdk';
-	import { onMount } from 'svelte';
 
-	onMount(async () => {
+	const cb = async () => {
 		const code = [...new URLSearchParams(window.location.search)].find(([k]) => k === 'code')![1];
 
 		if (!CLIENT_ID || !CLIENT_SECRET) {
@@ -30,5 +29,6 @@
 		localStorage.setItem('token', JSON.stringify(accessToken));
 
 		window.location.href = base || '/';
-	});
+	};
+	cb();
 </script>

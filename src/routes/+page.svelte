@@ -12,8 +12,6 @@
 
 	export let data: LayoutData;
 
-	console.log(data);
-
 	const getYoutubeId = async (track: Track) => {
 		interface Results {
 			type: string;
@@ -60,8 +58,6 @@
 			}
 		}
 	);
-
-	tracks?.then();
 
 	const play = (track: Track): (() => Promise<void>) => {
 		return async () => {
