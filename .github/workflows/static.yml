@@ -34,10 +34,9 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm run build
-        with:
-          env:
-            PUBLIC_CORS_PROXY: ${{ vars.PUBLIC_CORS_PROXY }}
-            PUBLIC_INVIDIOUS_INSTANCE: ${{ vars.PUBLIC_INVIDIOUS_INSTANCE }}
+        env:
+          PUBLIC_CORS_PROXY: ${{ vars.PUBLIC_CORS_PROXY }}
+          PUBLIC_INVIDIOUS_INSTANCE: ${{ vars.PUBLIC_INVIDIOUS_INSTANCE }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
