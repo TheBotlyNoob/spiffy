@@ -33,8 +33,6 @@ jobs:
           node-version: 18
           cache: 'pnpm'
       - run: pnpm install
-      - run:
-          echo -e "PUBLIC_CORS_PROXY=${{ vars.PUBLIC_CORS_PROXY }}\nPUBLIC_INVIDIOUS_INSTANCE=${{ vars.PUBLIC_INVIDIOUS_INSTANCE }}" > .env
       - run: pnpm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
