@@ -17,7 +17,7 @@ export const load: LayoutLoad = ({ url }): { sdk: SpotifyApi } => {
 		return {
 			sdk: SpotifyApi.withAccessToken(CLIENT_ID, TOKEN)
 		};
-	} else if (!['/login', '/callback'].includes(url.pathname)) {
+	} else if (![`${base}/login`, `${base}/callback`].includes(url.pathname)) {
 		throw redirect(302, `${base}/login`);
 	} else {
 		return {
