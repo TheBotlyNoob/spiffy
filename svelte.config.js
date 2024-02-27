@@ -15,7 +15,7 @@ const config = {
 			fallback: '404.html'
 		}), 
 		paths: {
-			relative: true
+			base: "/spiffy"
 		}
 	}
 
