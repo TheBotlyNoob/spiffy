@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PUBLIC_INVIDIOUS_INSTANCE } from '$env/static/public';
+	import { PUBLIC_INVIDIOUS_INSTANCE, PUBLIC_CORS_PROXY } from '$env/static/public';
 	import type { Track } from '@spotify/web-api-ts-sdk';
 	import { Howl, Howler } from 'howler';
 	import { db, downloadTrack } from '$lib/download';

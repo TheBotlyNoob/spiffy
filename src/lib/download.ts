@@ -1,4 +1,4 @@
-import { PUBLIC_INVIDIOUS_INSTANCE } from '$env/static/public';
+import { PUBLIC_CORS_PROXY, PUBLIC_INVIDIOUS_INSTANCE } from '$env/static/public';
 import type { Track } from '@spotify/web-api-ts-sdk';
 import Dexie from 'dexie';
 
@@ -34,7 +34,7 @@ const HIGH_QUALITY_ITAG = '140';
 
 export const downloadTrack = async (track: Track, index: number, youtubeId: string) => {
 	const url =
-		'https://corsproxy.io/?' + // TODO: cors
+		PUBLIC_CORS_PROXY + 
 		PUBLIC_INVIDIOUS_INSTANCE +
 		'/latest_version?' +
 		new URLSearchParams({
@@ -63,9 +63,6 @@ export const downloadTrack = async (track: Track, index: number, youtubeId: stri
 		reader.readAsDataURL(blob);
 	});
 
-	db.version(1).stores({
-		tracks: 'id, name, artists, album, url'
-	});
 
 	await db.tracks.put({
 		id: track.id,

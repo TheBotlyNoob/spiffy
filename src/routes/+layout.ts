@@ -2,11 +2,16 @@ import { CLIENT_ID, TOKEN } from '$lib/spotify';
 import { SpotifyApi } from '@spotify/web-api-ts-sdk';
 import type { LayoutLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
+import { db } from '$lib/download';
 
 export const prerender = false;
 export const ssr = false;
 
 export const load: LayoutLoad = ({ url }): { sdk: SpotifyApi } => {
+	db.version(1).stores({
+		tracks: 'id, name, artists, album, url'
+	});
+
 	if (TOKEN && CLIENT_ID) {
 		return {
 			sdk: SpotifyApi.withAccessToken(CLIENT_ID, TOKEN)
